@@ -106,4 +106,10 @@ PopupJS is compatible with modern web browsers, including Chrome, Firefox, Safar
 
 ## Copyright
 
-(C) AlphaBrate 2024. Released under the APEL.
+© AlphaBrate 2024. Released under the APEL.
+
+## Credit
+
+### Design Resources (Template)
+
+* [Apple Design Resources](https://developer.apple.com/design/resources/)

@@ -115,6 +115,44 @@ function puJSPreloadIcons(a = []) {
 
 pujs.pullOutAlerts = [];
 
+pujs.lockscreen = function () {
+    if (pujs.setup.body_scrollable) {
+
+        let scrollbar_width = window.innerWidth - document.documentElement.clientWidth;
+
+        pujs.setup.original.scroll = window.scrollY || 0;
+        pujs.setup.original.scrollLeft = window.scrollX || 0;
+        pujs.setup.original.height = pujs.getCssRule('body').style.height || 'auto';
+        pujs.setup.original.width = pujs.getCssRule('body').style.width || 'auto';
+        pujs.setup.original.overflow = pujs.getCssRule('body').style.overflow || 'auto';
+        pujs.setup.original.overflowX = pujs.getCssRule('body').style.overflowX || 'auto';
+        pujs.setup.original.overflowY = pujs.getCssRule('body').style.overflowY || 'auto';
+        pujs.setup.original.position = pujs.getCssRule('body').style.position || 'static';
+        pujs.setup.original.top = pujs.getCssRule('body').style.top || 0;
+        pujs.setup.original.right = pujs.getCssRule('body').style.right || 0;
+
+        document.body.style.position = 'fixed';
+        document.body.style.top = '-' + pujs.setup.original.scroll + 'px';
+        document.body.style.height = '100vh';
+        document.body.style.width = `calc(100vw - ${scrollbar_width + 'px'})`;
+        document.body.style.right = scrollbar_width + 'px';
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+pujs.lockscreen.unlock = function () {
+    if (pujs.setup.body_scrollable) {
+        document.body.style.position = pujs.setup.original.position;
+        document.body.style.top = pujs.setup.original.top;
+        document.body.style.height = pujs.setup.original.height;
+        document.body.style.width = pujs.setup.original.width;
+        document.body.style.overflow = pujs.setup.original.overflow;
+        document.body.style.overflowX = pujs.setup.original.overflowX;
+        document.body.style.overflowY = pujs.setup.original.overflowY;
+        window.scrollTo(pujs.setup.original.scrollLeft, pujs.setup.original.scroll);
+    }
+}
+
 pujs.pullOutTouch = {
     start_x: 0,
     start_y: 0,
@@ -122,16 +160,7 @@ pujs.pullOutTouch = {
     done: () => {
         pujs.setup.todo.pullOut.end();
         if (pujs.pullOutAlerts.length === 0) {
-            if (pujs.setup.body_scrollable) {
-                document.body.style.position = pujs.setup.original.position;
-                document.body.style.top = pujs.setup.original.top;
-                document.body.style.height = pujs.setup.original.height;
-                document.body.style.width = pujs.setup.original.width;
-                document.body.style.overflow = pujs.setup.original.overflow;
-                document.body.style.overflowX = pujs.setup.original.overflowX;
-                document.body.style.overflowY = pujs.setup.original.overflowY;
-                window.scrollTo(pujs.setup.original.scrollLeft, pujs.setup.original.scroll);
-            }
+            pujs.lockscreen.unlock();
         }
     }
 };
@@ -239,30 +268,11 @@ pujs.pullOut = (html = '', scroll = false, id = undefined) => {
         }
 
         if (id) { a.id = id; }
-        if (pujs.setup.body_scrollable) {
 
-            let scrollbar_width = window.innerWidth - document.documentElement.clientWidth;
-
-            pujs.setup.original.scroll = window.scrollY || 0;
-            pujs.setup.original.scrollLeft = window.scrollX || 0;
-            pujs.setup.original.height = pujs.getCssRule('body').style.height || 'auto';
-            pujs.setup.original.width = pujs.getCssRule('body').style.width || 'auto';
-            pujs.setup.original.overflow = pujs.getCssRule('body').style.overflow || 'auto';
-            pujs.setup.original.overflowX = pujs.getCssRule('body').style.overflowX || 'auto';
-            pujs.setup.original.overflowY = pujs.getCssRule('body').style.overflowY || 'auto';
-            pujs.setup.original.position = pujs.getCssRule('body').style.position || 'static';
-            pujs.setup.original.top = pujs.getCssRule('body').style.top || 0;
-            pujs.setup.original.right = pujs.getCssRule('body').style.right || 0;
-
-            document.body.style.position = 'fixed';
-            document.body.style.top = '-' + pujs.setup.original.scroll + 'px';
-            document.body.style.height = '100vh';
-            document.body.style.width = `calc(100vw - ${scrollbar_width + 'px'})`;
-            document.body.style.right = scrollbar_width + 'px';
-            document.body.style.overflow = 'hidden';
-        }
+        pujs.lockscreen();
 
         document.body.appendChild(a);
+
         pujs.pullOutAlerts.push(a);
     }, 1);
 };
@@ -323,6 +333,8 @@ pujs.alert = (m = '', t = 'error', T = 3000, S = false) => {
 };
 
 pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type = 'vert', input = undefined) => {
+    pujs.setup.todo.popup.start();
+    pujs.lockscreen();
     if (!document.querySelector('.puJS-fullscreen-cover')) {
         let FullscreenCover = document.createElement('div');
         FullscreenCover.classList.add('puJS-fullscreen-cover');
@@ -338,13 +350,15 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
     let inp = '';
 
     if (input) {
-        let inputElement = document.createElement('input');
-        inputElement.classList.add('input');
-        inputElement.classList.add('pujs-popup-inp');
-        inputElement.placeholder = input.placeholder || '';
-        inputElement.value = input.value || '';
-        inputElement.type = input.type || 'text';
-        inp = inputElement.outerHTML;
+        input.forEach((w) => {
+            let inputElement = document.createElement('input');
+            inputElement.classList.add('input');
+            inputElement.classList.add('pujs-popup-inp');
+            inputElement.placeholder = w.placeholder || '';
+            inputElement.value = w.value || '';
+            inputElement.type = w.type || 'text';
+            inp += inputElement.outerHTML;
+        });
     }
 
     popup.innerHTML = `<div class='puJS-popup-container'><div class='padding'><div class='title'>${title}</div><div class='message'>${message}</div>${inp}</div><div class='buttons'></div></div>`;
@@ -357,6 +371,7 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
             button.addEventListener('click', w.callback);
             button.addEventListener('click', (e) => {
                 pujs.setup.todo.popup.end();
+                pujs.lockscreen.unlock();
                 if (input) {
                     pujs.popup.value = document.querySelector('.pujs-popup-inp').value;
                 }
@@ -380,6 +395,7 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
             button.addEventListener('click', buttons[i].callback);
             button.addEventListener('click', (e) => {
                 pujs.setup.todo.popup.end();
+                pujs.lockscreen.unlock();
                 if (input) {
                     pujs.popup.value = document.querySelector('.pujs-popup-inp').value;
                 }

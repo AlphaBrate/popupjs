@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Showcasing: PopupJS | AlphaBrate</title>
     <style>
         body {
             background: rgb(248, 248, 248);
@@ -36,7 +36,7 @@
                 margin: 0;
                 padding: 0;
 
-                font-size: max(2vh, 2vw);
+                font-size: max(2.5vh, 2vw);
             }
         }
 
@@ -176,7 +176,7 @@
                 onclick="pujs.popup(title = 'Horizontal Buttons', message = 'A message should be a short, complete sentence.', buttons = [{ 'text': 'Action', callback: () => { }, color: 'var(--red)' },{ 'text': 'Action', callback: () => { } }], 'horiz')">Horizontally
                 Arranged Actions</button>
             <button
-                onclick="pujs.popup(title = 'Try Input Something', message = 'This is a sample alert box<br>with an input element.', buttons = [{ 'text': 'Submit', callback: () => { setTimeout(()=>{pujs.alert(pujs.popup.value, 'success')},1) } },{ 'text': 'Cancel', callback: () => { }, color: 'var(--red)' }], 'vert',  {placeholder: 'Try type something'})">
+                onclick="pujs.popup(title = 'Try Input Something', message = 'This is a sample alert box<br>with an input element.', buttons = [{ 'text': 'Submit', callback: () => { setTimeout(()=>{pujs.alert(pujs.popup.value, 'success')},1) } },{ 'text': 'Cancel', callback: () => { }, color: 'var(--red)' }], 'vert',  [{placeholder: 'Try type something'}, {placeholder: 'Hidden Text', type: 'password'}])">
                 Input Element (Vert. Actions)</button>
             <p>pujs.popup() is a versatile function<br>that can be used in various ways.</p>
         </div>
@@ -186,7 +186,7 @@
     </div>
     <footer>
         <div class="links">
-            <a href="https://alphabrate.github.io/articles/user-manuals/popupjs">Documents</a>
+            <a href="../../readme">Documents</a>
             ·
             <a href="https://alphabrate.github.io">AlphaBrate</a>
             ·
@@ -194,7 +194,7 @@
         </div>
         <p>© AlphaBrate 2024 under APEL License.</p>
     </footer>
-    <script src="../../pu.min.js"></script>
+    <script src="../popup.js"></script>
     <script>
         const isTouchCapable = 'ontouchstart' in window ||
             (window.DocumentTouch && document instanceof window.DocumentTouch) ||
