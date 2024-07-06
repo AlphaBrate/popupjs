@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            background: rgb(248, 248, 248);
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        h1 {
+            margin: 2rem 2rem 4rem 2rem;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-top: 1px solid rgba(128, 128, 128, 0.3);
+            max-width: 700px;
+            width: 90%;
+            margin: 0 auto;
+
+            h2 {
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin: 0;
+                padding: 0;
+
+                font-size: max(2vh, 2vw);
+            }
+        }
+
+        .zone {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin: 45px auto;
+            margin-bottom: 15px;
+            transition: .5s;
+        }
+
+        span.expand {
+            position: absolute;
+            top: 0;
+            left: 0;
+            user-select: none;
+            cursor: pointer;
+            height: 25px;
+            width: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            border-top: none;
+            transform: translateY(-1px);
+        }
+
+        .block {
+            position: fixed;
+            bottom: 5%;
+            left: 0;
+            right: 0;
+            height: 18vh;
+            background: url(./assets/background.svg);
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: .3s;
+            pointer-events: none;
+        }
+
+        body.touch h {
+            background: rgba(255, 255, 0, 0.216);
+        }
+
+        button {
+            user-select: none;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 20px;
+            margin: 10px;
+            transition: .3s;
+            outline: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+
+
+            &:hover {
+                background-color: #181818;
+            }
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            font-size: 12px;
+            color: rgba(128, 128, 128, 0.5);
+
+            .links {
+                display: flex;
+                gap: 5px;
+            }
+
+            a {
+                color: #007bff;
+                font-weight: bold;
+                text-decoration: none;
+                transition: .3s;
+                font-size: 14px;
+
+                &:hover {
+                    color: #0d72de;
+                }
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../popup.css">
+</head>
+
+<body>
+    <h1>Popup.js Sample Area</h1>
+    <div class="flex">
+        <h2>Pulled-Out Alert Sheet</h2>
+        <span class="expand" data-id="1">▼</span>
+        <div class="zone">
+            <button
+                onclick="pujs.pullOut('<h1>This is a pull-out alert</h1><p>Tap empty spaces to exit. <h>On touch devices,<br>pull-window-down exiting is available.</h></p>' + this.outerHTML);">pujs.pullOut()</button>
+            <p>A window will be pulled out<br>from bottom (Reference iOS).</p>
+        </div>
+    </div>
+    <br>
+    <div class="flex">
+        <h2>Small Notification Note</h2>
+        <span class="expand" data-id="2">▼</span>
+        <div class="zone">
+            <button
+                onclick="document.querySelector('.block').style.opacity = 1;setTimeout(()=>{pujs.alert(`This background image won't be shown.`)}, 300);">pujs.alert()
+                ✕</button>
+            <button
+                onclick="document.querySelector('.block').style.opacity = 1;setTimeout(()=>{pujs.alert('Done', 'success', 1000)}, 300)">pujs.alert()
+                ✓</button>
+            <p>A small notification pop-up element.</p>
+        </div>
+    </div>
+    <br>
+    <div class="flex">
+        <h2>Multifunctional Dialog</h2>
+        <span class="expand" data-id="3">▼</span>
+        <div class="zone">
+            <button
+                onclick="pujs.popup(title = 'This is an Alert', message = 'With vertically arranged buttons.', buttons = [{ 'text': 'pujs.alert()', callback: () => { pujs.alert('pujs.alert()', 'success') } },{ 'text': 'pujs.pullOut()', callback: () => { pujs.pullOut('<h1>This is a pull-out alert</h1><p>It not only can be an alert, you can customize it with HTML.</p>') } }]);">Vertically
+                Arranged Actions</button>
+            <button
+                onclick="pujs.popup(title = 'Horizontal Buttons', message = 'A message should be a short, complete sentence.', buttons = [{ 'text': 'Action', callback: () => { }, color: 'var(--red)' },{ 'text': 'Action', callback: () => { } }], 'horiz')">Horizontally
+                Arranged Actions</button>
+            <button
+                onclick="pujs.popup(title = 'Try Input Something', message = 'This is a sample alert box<br>with an input element.', buttons = [{ 'text': 'Submit', callback: () => { setTimeout(()=>{pujs.alert(pujs.popup.value, 'success')},1) } },{ 'text': 'Cancel', callback: () => { }, color: 'var(--red)' }], 'vert',  {placeholder: 'Try type something'})">
+                Input Element (Vert. Actions)</button>
+            <p>pujs.popup() is a versatile function<br>that can be used in various ways.</p>
+        </div>
+    </div>
+    <div class="block"></div>
+    <div style="height: 10rem;width: 100%;">
+    </div>
+    <footer>
+        <div class="links">
+            <a href="https://alphabrate.github.io/articles/user-manuals/popupjs">Documents</a>
+            ·
+            <a href="https://alphabrate.github.io">AlphaBrate</a>
+            ·
+            <a href="https://chutm.github.io">ReTrn (Developer)</a>
+        </div>
+        <p>© AlphaBrate 2024 under APEL License.</p>
+    </footer>
+    <script src="../../pu.min.js"></script>
+    <script>
+        const isTouchCapable = 'ontouchstart' in window ||
+            (window.DocumentTouch && document instanceof window.DocumentTouch) ||
+            navigator.maxTouchPoints > 0 ||
+            window.navigator.msMaxTouchPoints > 0;
+        if (isTouchCapable) {
+            document.body.classList.add('touch');
+        }
+
+        pujs.setup.init();
+
+        pujs.setup.todo.alert.end = () => {
+            document.querySelector('.block').style.opacity = 0;
+        };
+
+        let heights = {};
+
+        document.querySelectorAll('span.expand').forEach(w => {
+            w.addEventListener('click', e => {
+                const zone = e.target.nextElementSibling;
+                if (zone.style.maxHeight === '0px') {
+                    zone.style.maxHeight = heights[e.target.dataset.id];
+                    e.target.textContent = '▲';
+                } else {
+                    heights[e.target.dataset.id] = zone.offsetHeight + 'px';
+                    zone.style.maxHeight = '0';
+                    e.target.textContent = '▼';
+                }
+            });
+
+            w.click();
+        });
+    </script>
+</body>
+
+</html>

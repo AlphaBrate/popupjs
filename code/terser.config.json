@@ -1,0 +1,19 @@
+{
+    "mangle": {
+        "toplevel": true,
+        "reserved": [
+            "pujs",
+            "init",
+            "setup",
+            "body_scrollable",
+            "icons_path",
+            "todo",
+            "alert",
+            "popup",
+            "pullOut"
+        ]
+    },
+    "compress": {
+        "drop_console": true
+    }
+}
