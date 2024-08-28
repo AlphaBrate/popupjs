@@ -4,30 +4,33 @@ let pujsLoadedIcons = {};
 let pujs = {
     getCssRule: function (selectorText) {
         let i;
-        for (i = 0; i < document.styleSheets.length; i += 1) {
-            let sheet = document.styleSheets[i];
-            let j;
-            for (j = 0; j < sheet.cssRules.length; j += 1) {
-                let rule = sheet.cssRules[j];
-                if (rule.selectorText === selectorText) {
-                    return rule;
+        try {
+            for (i = 0; i < document.styleSheets.length; i += 1) {
+                let sheet = document.styleSheets[i];
+                let j;
+                for (j = 0; j < sheet.cssRules.length; j += 1) {
+                    let rule = sheet.cssRules[j];
+                    if (rule.selectorText === selectorText) {
+                        return rule;
+                    }
                 }
             }
-        }
+        } catch { }
         return null;
     },
     setup: {
         body_scrollable: true,
         original: {
             position: '',
-            height: '',
+            minHeight: '',
             top: '',
             overflow: '',
             width: '',
             overflowX: '',
             overflowY: '',
             scroll: 0,
-            scrollLeft: 0
+            scrollLeft: 0,
+            background: '#FFFFFF'
         },
         icons_path: './icons/',
         init: function () {
@@ -122,18 +125,18 @@ pujs.lockscreen = function () {
 
         pujs.setup.original.scroll = window.scrollY || 0;
         pujs.setup.original.scrollLeft = window.scrollX || 0;
-        pujs.setup.original.height = pujs.getCssRule('body').style.height || 'auto';
-        pujs.setup.original.width = pujs.getCssRule('body').style.width || 'auto';
-        pujs.setup.original.overflow = pujs.getCssRule('body').style.overflow || 'auto';
-        pujs.setup.original.overflowX = pujs.getCssRule('body').style.overflowX || 'auto';
-        pujs.setup.original.overflowY = pujs.getCssRule('body').style.overflowY || 'auto';
-        pujs.setup.original.position = pujs.getCssRule('body').style.position || 'static';
-        pujs.setup.original.top = pujs.getCssRule('body').style.top || 0;
-        pujs.setup.original.right = pujs.getCssRule('body').style.right || 0;
+        try { pujs.setup.original.minHeight = pujs.getCssRule('body').style.minHeight || 'auto'; } catch { }
+        try { pujs.setup.original.width = pujs.getCssRule('body').style.width || 'auto'; } catch { }
+        try { pujs.setup.original.overflow = pujs.getCssRule('body').style.overflow || 'auto'; } catch { }
+        try { pujs.setup.original.overflowX = pujs.getCssRule('body').style.overflowX || 'auto'; } catch { }
+        try { pujs.setup.original.overflowY = pujs.getCssRule('body').style.overflowY || 'auto'; } catch { }
+        try { pujs.setup.original.position = pujs.getCssRule('body').style.position || 'static'; } catch { }
+        try { pujs.setup.original.top = pujs.getCssRule('body').style.top || 0; } catch { }
+        try { pujs.setup.original.right = pujs.getCssRule('body').style.right || 0; } catch { }
 
         document.body.style.position = 'fixed';
         document.body.style.top = '-' + pujs.setup.original.scroll + 'px';
-        document.body.style.height = '100vh';
+        document.body.style.minHeight = '100vh';
         document.body.style.width = `calc(100vw - ${scrollbar_width + 'px'})`;
         document.body.style.right = scrollbar_width + 'px';
         document.body.style.overflow = 'hidden';
@@ -144,7 +147,7 @@ pujs.lockscreen.unlock = function () {
     if (pujs.setup.body_scrollable) {
         document.body.style.position = pujs.setup.original.position;
         document.body.style.top = pujs.setup.original.top;
-        document.body.style.height = pujs.setup.original.height;
+        document.body.style.minHeight = pujs.setup.original.minHeight;
         document.body.style.width = pujs.setup.original.width;
         document.body.style.overflow = pujs.setup.original.overflow;
         document.body.style.overflowX = pujs.setup.original.overflowX;
@@ -256,7 +259,7 @@ document.body.addEventListener('touchend', function (e) {
     }
 });
 
-pujs.pullOut = (html = '', scroll = false, id = undefined) => {
+pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBackground: '#FFF' } }) => {
     pujs.setup.todo.pullOut.start();
     setTimeout(() => {
         let a = document.createElement('div');
@@ -267,7 +270,7 @@ pujs.pullOut = (html = '', scroll = false, id = undefined) => {
             a.style.overflowY = 'scroll';
         }
 
-        if (id) { a.id = id; }
+        if (config.id) { a.id = config.id; }
 
         pujs.lockscreen();
 
@@ -275,6 +278,32 @@ pujs.pullOut = (html = '', scroll = false, id = undefined) => {
 
         pujs.pullOutAlerts.push(a);
     }, 1);
+};
+
+pujs.pullOut.close = (id = null) => {
+    if (id) {
+        let alert = document.getElementById(id);
+        if (alert) {
+            alert.style.animation = 'pujsPoAlertSlideOut .5s';
+            setTimeout(() => {
+                alert.remove();
+                let index = pujs.pullOutAlerts.indexOf(id);
+                if (index > -1) {
+                    pujs.pullOutAlerts.splice(index, 1);
+                }
+                pujs.pullOutTouch.done();
+            }, 500);
+        }
+    } else {
+        if (pujs.pullOutAlerts.length) {
+            pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].style.animation = 'pujsPoAlertSlideOut .5s';
+            setTimeout(() => {
+                pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].remove();
+                pujs.pullOutAlerts.pop();
+                pujs.pullOutTouch.done();
+            }, 500);
+        }
+    }
 };
 
 let puJSAlertTO;
@@ -368,13 +397,16 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
             button.classList.add('puJS-popup-button');
             button.innerHTML = w.text;
             if (w.color) { button.style.color = w.color; }
-            button.addEventListener('click', w.callback);
+
             button.addEventListener('click', (e) => {
+                let inputs = document.querySelectorAll('.pujs-popup-inp');
+                let values = [];
+                inputs.forEach((input) => {
+                    values.push(input.value);
+                });
+                if (w.callback) { w.callback(values); }
                 pujs.setup.todo.popup.end();
                 pujs.lockscreen.unlock();
-                if (input) {
-                    pujs.popup.value = document.querySelector('.pujs-popup-inp').value;
-                }
                 e.target.parentElement.parentElement.remove();
                 document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
                 document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
@@ -385,20 +417,25 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
         let buttonContainer = document.createElement('div');
         buttonContainer.classList.add('button-container');
         let i;
-        for (i = 0; i < 2; i += 1) {
+        for (i = 0; i < 2; i++) {
             let button = document.createElement('button');
             button.classList.add('puJS-popup-button');
             button.innerHTML = buttons[i].text;
             if (buttons[i].color) {
                 button.style.color = buttons[i].color;
             }
-            button.addEventListener('click', buttons[i].callback);
+
+            button.dataset.index = i;
+
             button.addEventListener('click', (e) => {
+                let inputs = document.querySelectorAll('.pujs-popup-inp');
+                let values = [];
+                inputs.forEach((input) => {
+                    values.push(input.value);
+                });
+                if (buttons[e.target.dataset.index].callback) { buttons[e.target.dataset.index].callback(values); }
                 pujs.setup.todo.popup.end();
                 pujs.lockscreen.unlock();
-                if (input) {
-                    pujs.popup.value = document.querySelector('.pujs-popup-inp').value;
-                }
                 e.target.parentElement.parentElement.parentElement.remove();
                 document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
                 document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
