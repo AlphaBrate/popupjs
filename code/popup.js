@@ -407,7 +407,12 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 if (w.callback) { w.callback(values); }
                 pujs.setup.todo.popup.end();
                 pujs.lockscreen.unlock();
-                e.target.parentElement.parentElement.remove();
+
+                e.target.parentElement.parentElement.parentElement.style.opacity = '0';
+                setTimeout(() => {
+                    e.target.parentElement.parentElement.parentElement.remove();
+                }, 200);
+
                 document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
                 document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
             });
@@ -436,7 +441,10 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 if (buttons[e.target.dataset.index].callback) { buttons[e.target.dataset.index].callback(values); }
                 pujs.setup.todo.popup.end();
                 pujs.lockscreen.unlock();
-                e.target.parentElement.parentElement.parentElement.remove();
+                e.target.parentElement.parentElement.parentElement.parentElement.style.opacity = '0';
+                setTimeout(() => {
+                    e.target.parentElement.parentElement.parentElement.parentElement.remove();
+                }, 200);
                 document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
                 document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
             });

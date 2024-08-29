@@ -18,7 +18,7 @@
     --placeholder-light: rgba(60, 60, 67, 0.29);
     --placeholder-dark: rgba(235, 235, 245, 0.3);
     --separator-light: rgba(128, 128, 128, 0.55);
-    --separator-dark: rgba(84, 84, 88, 0.65);
+    --separator-dark: rgba(141, 141, 145, 0.65);
 
     --pujs-popup-background: var(--pujs-popup-background-light);
     --pujs-popup-text-color: var(--pujs-popup-text-color-light);
@@ -243,11 +243,13 @@
 
     border-radius: var(--border-radius);
 
+    transition: opacity 0.2s;
     position: fixed;
     z-index: 1000;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    animation: pujsPopupIn .3s forwards ease-out;
 
     display: flex;
     justify-content: center;
@@ -308,6 +310,8 @@
     }
 
     button {
+        all: initial;
+        font-family: 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -351,6 +355,22 @@
 
     .emphasized {
         font-weight: 600;
+    }
+}
+
+@keyframes pujsPopupIn {
+    0% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
     }
 }
 

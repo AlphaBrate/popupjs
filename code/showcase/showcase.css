@@ -135,8 +135,7 @@ footer {
 pre {
     background: rgb(242, 242, 242);
     border: 2px solid rgb(235, 235, 235);
-    padding: 5px 15px;
-    padding-top: 11px;
+    padding: 11px 15px;
     overflow-x: scroll;
     overflow-y: hidden;
     border-radius: 7px;
