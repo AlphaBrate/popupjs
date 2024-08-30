@@ -1,8 +1,8 @@
-# PopupJS
+# Popup JS
 
-PopupJS is a lightweight JavaScript library that provides a simple way to create alerts for your web application. It's easy to use and customize and works well with modern web browsers.
+Popup.js is a lightweight JavaScript library that provides a simple way to create alerts for your web application. It's easy to use and customize and works well with modern web browsers.
 
-> [!NOTE]  
+> [!NOTE]
 > Visit [this page](https://alphabrate.github.io/popupjs/code/showcase/) for sample.
 
 ## Features
@@ -27,8 +27,10 @@ To use PopupJS in your web application, include the following CSS and JavaScript
 You can use our cdn-hosted files:
 
 ```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/alphabrate/popupjs/pu.min.css">
 <link rel="stylesheet" href="https://alb-cdn.web.app/popupjs/pu.min.css">
 
+<script src="https://cdn.jsdelivr.net/gh/alphabrate/popupjs/pu.min.js"></script>
 <script src="https://alb-cdn.web.app/popupjs/pu.min.js"></script>
 ```
 
@@ -48,22 +50,26 @@ You can then use the `pujs` object to create alerts, popups, and pull-outs in yo
     + `title` [String]: The title of the popup.
     + `message` [String]: The message to display in the popup.
     + `buttons` [Array]: An array of button objects with text and callback properties.
-        ```js
-        [
-            { text: 'Action 1', callback: function() { }, color: '[OPTIONAL]' },
-            { text: 'Action 2', callback: function() { } }
-        ]
-        ```
+  
+```js
+[
+    { text: 'Action 1', callback: function() { }, color: '[OPTIONAL]' },
+    { text: 'Action 2', callback: function() { } }
+]
+```
+
     + `buttonType` [String]: The type of buttons to display (vert or horiz).
     + `input` [JSON]: An optional input field to include in the popup.
-    ```js
-    {
-        type: 'text',
-        placeholder: 'Enter your name',
-        value: 'John Doe'
-    }
-    ```
-    > The value of input fields will be returned in the callback function.
+
+```js
+{
+    type: 'text',
+    placeholder: 'Enter your name',
+    value: 'John Doe'
+}
+```
+
+> The value of input fields will be returned in the callback function.
 
 ### Pull-Outs
 
