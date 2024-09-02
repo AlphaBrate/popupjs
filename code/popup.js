@@ -261,23 +261,28 @@ document.body.addEventListener('touchend', function (e) {
 
 pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBackground: '#FFF' } }) => {
     pujs.setup.todo.pullOut.start();
-    setTimeout(() => {
-        let a = document.createElement('div');
-        a.innerHTML = html;
-        a.className = 'pujs-poAlert';
-        if (scroll) {
-            a.style.display = 'block';
-            a.style.overflowY = 'scroll';
-        }
+    
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let a = document.createElement('div');
+            a.innerHTML = html;
+            a.className = 'pujs-poAlert';
+            if (scroll) {
+                a.style.display = 'block';
+                a.style.overflowY = 'scroll';
+            }
+    
+            if (config.id) { a.id = config.id; }
+    
+            pujs.lockscreen();
+    
+            document.body.appendChild(a);
 
-        if (config.id) { a.id = config.id; }
-
-        pujs.lockscreen();
-
-        document.body.appendChild(a);
-
-        pujs.pullOutAlerts.push(a);
-    }, 1);
+            resolve(a);
+    
+            pujs.pullOutAlerts.push(a);
+        }, 1);
+    });
 };
 
 pujs.pullOut.close = (id = null) => {
