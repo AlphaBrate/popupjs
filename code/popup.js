@@ -65,6 +65,10 @@ let pujs = {
             pullOut: {
                 start: function () { return false; },
                 end: function () { return false; }
+            },
+            lastingBanner: {
+                start: function () { return false; },
+                end: function () { return false; }
             }
         }
     }
@@ -185,7 +189,11 @@ document.body.addEventListener('click', function (e) {
     } catch { }
 
     if (!containspoAlert && pujs.pullOutAlerts.length) {
-        pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].style.animation = 'pujsPoAlertSlideOut .5s';
+        pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].style.animation = 'pujsPoAlertSlideOut .5s forwards';
+
+        let toBeRomoved = pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1];
+
+        pujs.pullOutAlerts.pop();
         // remove from array
         try {
             let id = pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].id;
@@ -196,12 +204,11 @@ document.body.addEventListener('click', function (e) {
                     pujs.pullOutAlerts.splice(index, 1);
                 }
             }
+        } catch { }
 
+        try {
             setTimeout(() => {
-                pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].remove();
-
-                pujs.pullOutAlerts.pop();
-
+                toBeRomoved.remove();
                 pujs.pullOutTouch.done();
             }, 500);
         } catch { }
@@ -259,9 +266,9 @@ document.body.addEventListener('touchend', function (e) {
     }
 });
 
-pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBackground: '#FFF' } }) => {
+pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBackground: '#FFF' } }, options = {}) => {
     pujs.setup.todo.pullOut.start();
-    
+
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             let a = document.createElement('div');
@@ -271,15 +278,15 @@ pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBack
                 a.style.display = 'block';
                 a.style.overflowY = 'scroll';
             }
-    
+
             if (config.id) { a.id = config.id; }
-    
+
             pujs.lockscreen();
-    
+
             document.body.appendChild(a);
 
             resolve(a);
-    
+
             pujs.pullOutAlerts.push(a);
         }, 1);
     });
@@ -289,7 +296,7 @@ pujs.pullOut.close = (id = null) => {
     if (id) {
         let alert = document.getElementById(id);
         if (alert) {
-            alert.style.animation = 'pujsPoAlertSlideOut .5s';
+            alert.style.animation = 'pujsPoAlertSlideOut .5s forwards';
             setTimeout(() => {
                 alert.remove();
                 let index = pujs.pullOutAlerts.indexOf(id);
@@ -301,7 +308,7 @@ pujs.pullOut.close = (id = null) => {
         }
     } else {
         if (pujs.pullOutAlerts.length) {
-            pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].style.animation = 'pujsPoAlertSlideOut .5s';
+            pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].style.animation = 'pujsPoAlertSlideOut .5s forwards';
             setTimeout(() => {
                 pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].remove();
                 pujs.pullOutAlerts.pop();
@@ -313,7 +320,7 @@ pujs.pullOut.close = (id = null) => {
 
 let puJSAlertTO;
 
-pujs.alert = (m = '', t = 'error', T = 3000, S = false) => {
+pujs.alert = (m = '', t = 'error', T = 3000, S = false, options = {}) => {
     pujs.setup.todo.alert.start();
     if (document.getElementsByClassName('alert').length === 0) {
         let Alert = document.createElement('div');
@@ -366,7 +373,7 @@ pujs.alert = (m = '', t = 'error', T = 3000, S = false) => {
     }, T);
 };
 
-pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type = 'vert', input = undefined) => {
+pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type, input, options = {}) => {
     pujs.setup.todo.popup.start();
     pujs.lockscreen();
     if (!document.querySelector('.puJS-fullscreen-cover')) {
@@ -396,6 +403,10 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
     }
 
     popup.innerHTML = `<div class='puJS-popup-container'><div class='padding'><div class='title'>${title}</div><div class='message'>${message}</div>${inp}</div><div class='buttons'></div></div>`;
+
+    if (button_type === 'vertical' || button_type === 'v') button_type = 'vert';
+    if (button_type === 'horizontal' || button_type === 'h') button_type = 'horiz';
+
     if (button_type === 'vert') {
         buttons.forEach((w) => {
             let button = document.createElement('button');
@@ -411,15 +422,15 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 });
                 if (w.callback) { w.callback(values); }
                 pujs.setup.todo.popup.end();
-                pujs.lockscreen.unlock();
-
-                e.target.parentElement.parentElement.parentElement.style.opacity = '0';
+                
+                e.target.parentElement.parentElement.parentElement.classList.add('puJS-popup-ended');
                 setTimeout(() => {
+                    pujs.lockscreen.unlock();
                     e.target.parentElement.parentElement.parentElement.remove();
+                    document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
+                    document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
                 }, 200);
 
-                document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
-                document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
             });
             popup.querySelector('.buttons').appendChild(button);
         });
@@ -445,13 +456,13 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 });
                 if (buttons[e.target.dataset.index].callback) { buttons[e.target.dataset.index].callback(values); }
                 pujs.setup.todo.popup.end();
-                pujs.lockscreen.unlock();
-                e.target.parentElement.parentElement.parentElement.parentElement.style.opacity = '0';
+                e.target.parentElement.parentElement.parentElement.parentElement.classList.add('puJS-popup-ended');
                 setTimeout(() => {
+                    pujs.lockscreen.unlock();
                     e.target.parentElement.parentElement.parentElement.parentElement.remove();
+                    document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
+                    document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
                 }, 200);
-                document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
-                document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
             });
             buttonContainer.appendChild(button);
         }
@@ -461,4 +472,110 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
     popup.querySelector('button').classList.add('emphasized');
 
     document.body.appendChild(popup);
+};
+
+pujs.lastingBanner = (html = '', type = 'warning', pos = 'bottom', buttons = [{ 'text': 'Close', callback: () => { }, style: "color: white; background: black; padding: 5px 10px; border-radius: 50px;" }], id, options = {}) => {
+    return new Promise((resolve, reject) => {
+        pujs.setup.todo.lastingBanner.start();
+
+        let banner = document.createElement('div');
+        banner.classList.add('puJS-lasting-banner');
+
+        if (!id) {
+            id = Math.random().toString(36).substring(7);
+        }
+        banner.id = id;
+
+        let type_list = {
+            notice: {
+                c: 'var(--pu-blue)',
+                f: 'black'
+            },
+            error: {
+                c: 'var(--pu-red)',
+                f: 'black'
+            },
+            success: {
+                c: 'var(--pu-green)'
+            },
+            warning: {
+                c: 'var(--pu-yellow)',
+                f: 'black'
+            },
+            alphabrate: {
+                c: 'transparent',
+                f: 'var(--pujs-popup-text-color)',
+                button_style: 'margin: .2rem; color: var(--pujs-popup-background); background: var(--pujs-popup-text-color); padding: 5px 10px; border-radius: 50px;',
+                block_style: 'backdrop-filter: blur(10px) saturate(180%); border: 1.5px solid var(--border)'
+            },
+        };
+
+        // add block style 
+        banner.style = type_list[type] ? type_list[type].block_style : '';
+
+        banner.style.backgroundColor = type_list[type] ? type_list[type].c || type : type;
+        if (type_list[type] ? type_list[type].f : false) banner.style.color = type_list[type] ? type_list[type].f || 'white' : 'white';
+
+        let innerDiv = document.createElement('div');
+        innerDiv.classList.add('inner');
+        innerDiv.innerHTML = html;
+
+        banner.appendChild(innerDiv);
+
+        let buttonsDiv = document.createElement('div');
+        buttonsDiv.classList.add('buttons');
+
+        buttons.forEach((w) => {
+            let button = document.createElement('button');
+            button.innerHTML = w.text;
+            button.addEventListener('click', (e) => {
+                if (w.callback) { w.callback(); }
+                pujs.lastingBanner.close(banner.id);
+            });
+            let style = w.style;
+
+            if (w.preset_style) {
+                // add class
+                button.classList.add(`pujs-button-${w.preset_style}`);
+            }
+
+            if (!style) {
+                style = type_list[type] ? type_list[type].button_style || '' : '';
+            }
+
+            button.style = style;
+
+            buttonsDiv.appendChild(button);
+        });
+
+        if (options.duration) {
+            setTimeout(() => {
+                pujs.lastingBanner.close(banner.id);
+            }, options.duration);
+        }
+
+        banner.appendChild(buttonsDiv);
+
+        document.body.appendChild(banner);
+
+        resolve(banner);
+    });
+};
+
+pujs.lastingBanner.close = (id) => {
+
+    if (!id) {
+        id = document.querySelector('.puJS-lasting-banner').id;
+    }
+
+    let banner = document.getElementById(id);
+    if (banner) {
+        // add animation, then remove
+        banner.style.pointerEvents = 'none';
+        banner.style.animation = 'pujsBannerSlideOut .5s forwards';
+        setTimeout(() => {
+            banner.remove();
+        }, 500);
+        pujs.setup.todo.lastingBanner.end();
+    }
 };

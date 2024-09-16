@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showcasing: PopupJS | AlphaBrate</title>
-    <link rel="stylesheet" href="../popup.css">
-    <!-- <link rel="stylesheet" href="/pu.min.css"> -->
+    <!-- <link rel="stylesheet" href="../popup.css"> -->
+    <link rel="stylesheet" href="/pu.min.css">
     <link rel="stylesheet" href="./showcase.css">
     <link rel="stylesheet" href="https://alphabrate.github.io/articles/codeblock.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.css">
 </head>
 
 <body>
-    <h1>Popup.js Sample Area</h1>
+    <h1>PopupJS Sample Area</h1>
     <div class="flex">
         <h2>Pulled-Out Alert Sheet</h2>
         <span class="expand" data-id="1">▼</span>
@@ -49,12 +49,21 @@
                 onclick="pujs.popup(title = 'This is an Alert', message = 'With vertically arranged buttons.', buttons = [{ 'text': 'pujs.alert()', callback: () => { pujs.alert('pujs.alert()', 'success') } },{ 'text': 'pujs.pullOut()', callback: () => { pujs.pullOut('<h1>This is a pull-out alert</h1><p>It not only can be an alert, you can customize it with HTML.</p>') } }]);">Vertically
                 Arranged Actions</button>
             <button
-                onclick="pujs.popup(title = 'Horizontal Buttons', message = 'A message should be a short, complete sentence.', buttons = [{ 'text': 'Action', callback: () => { }, color: 'var(--red)' },{ 'text': 'Action', callback: () => { } }], 'horiz')">Horizontally
+                onclick="pujs.popup(title = 'Horizontal Buttons', message = 'A message should be a short, complete sentence.', buttons = [{ 'text': 'Action', callback: () => { }, color: 'var(--pu-red)' },{ 'text': 'Action', callback: () => { } }], 'horiz')">Horizontally
                 Arranged Actions</button>
             <button
-                onclick="pujs.popup(title = 'Try Input Something', message = 'This is a sample alert box<br>with an input element.', buttons = [{ 'text': 'Action', callback: (value) => { setTimeout(()=>{console.log(value);pujs.alert(JSON.stringify(value), 'success')},1) } },{ 'text': 'Cancel', callback: () => { }, color: 'var(--red)' }], 'vert',  [{placeholder: 'Try type something'}, {placeholder: 'Hidden Text', type: 'password'}])">
+                onclick="pujs.popup(title = 'Try Input Something', message = 'This is a sample alert box<br>with an input element.', buttons = [{ 'text': 'Action', callback: (value) => { setTimeout(()=>{console.log(value);pujs.alert(JSON.stringify(value), 'success')},1) } },{ 'text': 'Cancel', callback: () => { }, color: 'var(--pu-red)' }], 'vert',  [{placeholder: 'Try type something'}, {placeholder: 'Hidden Text', type: 'password'}])">
                 Input Element (Vert. Actions)</button>
             <p>pujs.popup() is a versatile function<br>that can be used in various ways.</p>
+        </div>
+    </div>
+    <div class="flex">
+        <h2>Lasting Banner</h2>
+        <span class="expand" data-id="4">▼</span>
+        <div class="zone">
+            <button
+                onclick="pujs.lastingBanner(`<h1 style='padding: 0; margin: 0; margin-top: 2rem;'>Lasting Banner</h1><p  style='padding: 0; margin: 0; margin-bottom: 1rem;'>This is a banner which lasts forever.</p>`)">pujs.lastingBanner()</button>
+            <p>A banner that will be shown<br>forever</p>
         </div>
     </div>
     <div class="block"></div>
@@ -70,10 +79,19 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-    <script src="../popup.js"></script>
-    <!-- <script src="/pu.min.js"></script> -->
+    <!-- <script src="../popup.js"></script> -->
+    <script src="/pu.min.js"></script>
     <script>
-        document.querySelectorAll('button').forEach(b => {
+        pujs.lastingBanner(`<p>We're not using cookies. This is a demo cookie banner.</p>`, type = 'alphabrate', 'bottom',
+            buttons = [
+                { 'text': 'Consent', callback: () => { } }
+                , {
+                    'text': 'Learn More', callback: () => {
+                        pujs.alert("Nothing for you to learn more.", 'success');
+                    }, preset_style: 'black-and-white'
+                }]);
+
+        document.querySelectorAll('button[onclick]').forEach(b => {
             // Add <span class="show-source">Show Source Code</span>
             const span = document.createElement('span');
             span.className = 'show-source';
