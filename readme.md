@@ -4,12 +4,8 @@ PopupJS is a lightweight JavaScript library that provides a simple way to create
 
 > [!NOTE]
 > Visit [this page](https://alphabrate.github.io/popupjs/code/showcase/) for sample.
-
-## Features
-
-* Alerts: Display customizable alert messages with icons and callbacks.
-* Popups: Create modal popups with titles, messages, and buttons.
-* Pull-Outs: Create pull-out notifications that can be swiped away.
+> 
+> [PopupJS: AlphaBrate Docs](https://alphabrate.github.io/articles/user-manuals/popupjs)
 
 ## Usage
 
@@ -27,10 +23,8 @@ To use PopupJS in your web application, include the following CSS and JavaScript
 You can use our cdn-hosted files:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/alphabrate/popupjs/pu.min.css">
 <link rel="stylesheet" href="https://alb-cdn.web.app/popupjs/pu.min.css">
 
-<script src="https://cdn.jsdelivr.net/gh/alphabrate/popupjs/pu.min.js"></script>
 <script src="https://alb-cdn.web.app/popupjs/pu.min.js"></script>
 ```
 
