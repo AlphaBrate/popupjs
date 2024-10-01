@@ -1,4 +1,4 @@
-# Popup JS
+# PopupJS
 
 Popup.js is a lightweight JavaScript library that provides a simple way to create alerts for your web application. It's easy to use and customize and works well with modern web browsers.
 
