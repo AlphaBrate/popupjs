@@ -1,3 +1,32 @@
+// Get if PopupJS CSS is included
+
+let CSSNOCHECKPUJS = false;
+
+try {
+    if (noPuJSCSSCheck) {
+        CSSNOCHECKPUJS = noPuJSCSSCheck;
+    }
+} catch {
+    CSSNOCHECKPUJS = false;
+}
+
+if (!CSSNOCHECKPUJS) {
+    let pujsCSS = false;
+    let pujsCSSLinks = document.getElementsByTagName('link');
+    for (let i = 0; i < pujsCSSLinks.length; i++) {
+        if (pujsCSSLinks[i].href.includes('popup.css') ||
+            pujsCSSLinks[i].href.includes('popup.min.css') ||
+            pujsCSSLinks[i].href.includes('pu.css') ||
+            pujsCSSLinks[i].href.includes('pu.min.css')) {
+            pujsCSS = true;
+            break;
+        }
+    }
+
+    if (!pujsCSS) {
+        console.warn('PopupJS: CSS file is not included. Please include the CSS file in the head tag. For more information, visit https://aphbrt.web.app/articles/user-manuals/popupjs/?article=solutions Warning ID: CSS_NOT_INCLUDED');
+    }
+}
 
 let pujsLoadedIcons = {};
 
@@ -64,7 +93,8 @@ let pujs = {
             },
             pullOut: {
                 start: function () { return false; },
-                end: function () { return false; }
+                end: function () { return false; },
+                ending: function () { return false; } // Ending event need if the close of the alert is animated
             },
             lastingBanner: {
                 start: function () { return false; },
@@ -180,7 +210,7 @@ document.body.addEventListener('click', function (e) {
     let T = t;
     try {
         while (T.nodeName !== 'BODY') {
-            if (T.classList.contains('pujs-poAlert')) {
+            if (T.classList.contains('pujs-poAlert') || T.classList.contains('puJS-donotclose')) {
                 containspoAlert = true;
                 break;
             }
@@ -204,6 +234,11 @@ document.body.addEventListener('click', function (e) {
                     pujs.pullOutAlerts.splice(index, 1);
                 }
             }
+        } catch { }
+
+        try {
+            // ending event
+            pujs.setup.todo.pullOut.ending();
         } catch { }
 
         try {
@@ -254,6 +289,10 @@ document.body.addEventListener('touchend', function (e) {
         if (percentage > 30 || ppt) {
             e.target.style.transition = 'transform 0.5s';
             e.target.style.transform = 'translateY(100%)';
+
+            // ending event
+            pujs.setup.todo.pullOut.ending();
+
             setTimeout(() => {
                 e.target.remove();
                 pujs.pullOutAlerts.pop();
@@ -266,7 +305,9 @@ document.body.addEventListener('touchend', function (e) {
     }
 });
 
-pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBackground: '#FFF' } }, options = {}) => {
+pujs.pullOut = (html = '', scroll = false, options = {
+    lockscreen: true,
+}) => {
     pujs.setup.todo.pullOut.start();
 
     return new Promise((resolve, reject) => {
@@ -279,9 +320,11 @@ pujs.pullOut = (html = '', scroll = false, config = { narrowBody: { narrowedBack
                 a.style.overflowY = 'scroll';
             }
 
-            if (config.id) { a.id = config.id; }
+            if (options.id) { a.id = options.id; }
 
-            pujs.lockscreen();
+            if (options.lockscreen) {
+                pujs.lockscreen();
+            }
 
             document.body.appendChild(a);
 
@@ -297,6 +340,10 @@ pujs.pullOut.close = (id = null) => {
         let alert = document.getElementById(id);
         if (alert) {
             alert.style.animation = 'pujsPoAlertSlideOut .5s forwards';
+
+            // ending event
+            pujs.setup.todo.pullOut.ending();
+
             setTimeout(() => {
                 alert.remove();
                 let index = pujs.pullOutAlerts.indexOf(id);
@@ -309,6 +356,10 @@ pujs.pullOut.close = (id = null) => {
     } else {
         if (pujs.pullOutAlerts.length) {
             pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].style.animation = 'pujsPoAlertSlideOut .5s forwards';
+
+            // ending event
+            pujs.setup.todo.pullOut.ending();
+
             setTimeout(() => {
                 pujs.pullOutAlerts[pujs.pullOutAlerts.length - 1].remove();
                 pujs.pullOutAlerts.pop();
@@ -373,9 +424,13 @@ pujs.alert = (m = '', t = 'error', T = 3000, S = false, options = {}) => {
     }, T);
 };
 
-pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type, input, options = {}) => {
+pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type, input, options = {
+    lockscreen: true
+}) => {
     pujs.setup.todo.popup.start();
-    pujs.lockscreen();
+    if (options.lockscreen) {
+        pujs.lockscreen();
+    }
     if (!document.querySelector('.puJS-fullscreen-cover')) {
         let FullscreenCover = document.createElement('div');
         FullscreenCover.classList.add('puJS-fullscreen-cover');
@@ -422,7 +477,7 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 });
                 if (w.callback) { w.callback(values); }
                 pujs.setup.todo.popup.end();
-                
+
                 e.target.parentElement.parentElement.parentElement.classList.add('puJS-popup-ended');
                 setTimeout(() => {
                     pujs.lockscreen.unlock();

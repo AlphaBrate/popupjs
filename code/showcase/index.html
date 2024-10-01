@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showcasing: PopupJS | AlphaBrate</title>
     <!-- <link rel="stylesheet" href="../popup.css"> -->
-    <link rel="stylesheet" href="../../pu.min.css">
+    <!-- <link rel="stylesheet" href="../../pu.min.css"> -->
     <link rel="stylesheet" href="./showcase.css">
     <link rel="stylesheet" href="https://alphabrate.github.io/articles/codeblock.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.css">
@@ -24,6 +24,9 @@
             <button
                 onclick="pujs.pullOut(`<h1>Time pulled-out</h1><p>You pulled this out on <span id='display-time'></span></p>`).then(el=> {el.querySelector('#display-time').innerText = new Date().toLocaleTimeString();});">pujs.pullOut()</button>
             <p>A pull-out with time shown.</p>
+            <button
+                onclick="pujs.pullOut(`<h1>You can scorll the entire page.</h1>`, false, {lockscreen: false});">pujs.pullOut()</button>
+            <p>Don't Lock Screen.</p>
         </div>
     </div>
     <br>
@@ -77,10 +80,9 @@
         </div>
         <p>© AlphaBrate 2024 under APEL License.</p>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-    <!-- <script src="../popup.js"></script> -->
-    <script src="../../pu.min.js"></script>
+    <script src="../popup.js"></script>
+    <!-- <script src="../../pu.min.js"></script> -->
     <script>
         pujs.lastingBanner(`<p>We're not using cookies. This is a demo cookie banner.</p>`, type = 'alphabrate', 'bottom',
             buttons = [
