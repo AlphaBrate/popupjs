@@ -1,0 +1,18 @@
+2024-10-27:
+
+- Add a new feature: 'Action Sheet'. Now you can create an action sheet with multiple buttons and a cancel button.
+- Improve logic for the 'Pull-out Alert' feature.
+- Add a Close Button for the 'Pull-out Alert' feature which user can turn on in config.
+- Add a 'Drag Handle' for the 'Pull-out Alert' feature which user can turn on in config.
+- Add a new config option for the 'Pull-out Alert' feature: 'height'. Now you can set the height of the alert.
+- Improve animatipn for the 'Pull-out Alert' feature so that it looks more elastic and bouncy.
+
+2024-09-23:
+
+- Add "Don't lock the screen" feature. Now you can set the alert to not lock the screen when it is pulled out or popped up.
+
+2024-09-13:
+
+- Solve the issue of animation not working when the user is not clicking to close a pulled-out alert one by one.
+- Add a new feature: 'lastingBanner' which allows the user to make a banner that will last until the user closes it. (Well, you can also set a time limit for it to close automatically.)
+- Solve the issue of the popup not having closing animation when the user closes it by clicking.

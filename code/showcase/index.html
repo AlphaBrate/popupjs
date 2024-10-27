@@ -19,13 +19,28 @@
         <span class="expand" data-id="1">▼</span>
         <div class="zone">
             <button
-                onclick="pujs.pullOut('<h1>This is a pull-out alert</h1><p>Tap empty spaces to exit. <h>On touch devices,<br>pull-window-down exiting is available.</h></p>' + this.outerHTML);">pujs.pullOut()</button>
+                onclick="pujs.pullOut('<h1>This is a pull-out alert</h1><p>Tap empty spaces to exit. <h>On touch devices,<br>pull-window-down exiting is available.</h></p>' + this.outerHTML);">
+                pujs.pullOut()
+            </button>
             <p>A window will be pulled out<br>from bottom (Reference iOS).</p>
-            <button
-                onclick="pujs.pullOut(`<h1>Time pulled-out</h1><p>You pulled this out on <span id='display-time'></span></p>`).then(el=> {el.querySelector('#display-time').innerText = new Date().toLocaleTimeString();});">pujs.pullOut()</button>
+            <button onclick="pujs.pullOut(`<h1>Time pulled-out</h1><p>You pulled this out on <span id='display-time'></span></p>`, false, {
+                    dragHandle: true,
+                    height: '65%'
+            })
+                .then(el => {
+                    el.querySelector('#display-time').innerText = new Date().toLocaleTimeString();
+                });">
+                pujs.pullOut()
+            </button>
             <p>A pull-out with time shown.</p>
-            <button
-                onclick="pujs.pullOut(`<h1>You can scorll the entire page.</h1>`, false, {lockscreen: false});">pujs.pullOut()</button>
+            <button onclick="pujs.pullOut(`<h1>You can scorll the entire page.</h1>`,
+                false,
+                {
+                    lockscreen: false,
+                    closeButton: true
+                });">
+                pujs.pullOut()
+            </button>
             <p>Don't Lock Screen.</p>
         </div>
     </div>
@@ -34,11 +49,11 @@
         <h2>Small Notification Note</h2>
         <span class="expand" data-id="2">▼</span>
         <div class="zone">
-            <button
-                onclick="document.querySelector('.block').style.opacity = 1;setTimeout(()=>{pujs.alert(`This background image won't be shown.`)}, 300);">pujs.alert()
+            <button onclick="document.querySelector('.block').style.opacity = 1;
+                setTimeout(() => {pujs.alert(`This background image won't be shown.`)}, 300);">pujs.alert()
                 ✕</button>
-            <button
-                onclick="document.querySelector('.block').style.opacity = 1;setTimeout(()=>{pujs.alert('Done', 'success', 1000)}, 300)">pujs.alert()
+            <button onclick="document.querySelector('.block').style.opacity = 1;
+                setTimeout(() => {pujs.alert('Done', 'success', 1000)}, 300)">pujs.alert()
                 ✓</button>
             <p>A small notification pop-up element.</p>
         </div>
@@ -69,11 +84,33 @@
             <p>A banner that will be shown<br>forever</p>
         </div>
     </div>
+    <div class="flex">
+        <h2>Action Sheet</h2>
+        <span class="expand" data-id="5">▼</span>
+        <div class="zone">
+            <button onclick="pujs.actionSheet(title = 'A Short Title is Best', message = 'A message should be a short, complete sentence.',
+            buttons = [
+                {'text': 'Action 1', callback: () => {pujs.alert(`3! 2! 1! Action 1!`, 'success')}},
+                {'text': 'Action 1', callback: () => {pujs.alert(`3! 2! 1! Action 2!`, 'success')}},
+                {'text': 'Action 2', callback: () => {pujs.alert(`3! 2! 1! Action 3!`, 'success')}},
+                {'text': 'Disabled Action', type: 'disabled'},
+                {'text': 'Destructive Action', type: 'destructive', callback: () => {
+                    body.style.animation = 'destroy 2s forwards';
+                    body.addEventListener('animationend', () => {
+                        pujs.alert(`You just clicked a destructive action. 😱`, 'error');
+                        body.style.animation = '';
+                    }, { once: true });
+                }}])">pujs.actionSheet()</button>
+            <p>Action Sheet (Bottom Sheet)</p>
+        </div>
+    </div>
     <div class="block"></div>
     <div style="height: 10rem;width: 100%;">
     </div>
     <footer>
         <div class="links">
+            <a href="https://aphbrt.web.app/articles/user-manuals/popupjs/">Documents</a>
+            ·
             <a href="https://alphabrate.github.io">AlphaBrate</a>
             ·
             <a href="https://chutm.github.io">ReTrn (Developer)</a>
@@ -81,17 +118,19 @@
         <p>© AlphaBrate 2024 under APEL License.</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-    <script src="../popup.js"></script>
-    <!-- <script src="../../pu.min.js"></script> -->
+    <!-- <script src="../popup.js"></script> -->
+    <script src="../../pu.min.js"></script>
     <script>
-        pujs.lastingBanner(`<p>We're not using cookies. This is a demo cookie banner.</p>`, type = 'alphabrate', 'bottom',
-            buttons = [
-                { 'text': 'Consent', callback: () => { } }
-                , {
-                    'text': 'Learn More', callback: () => {
-                        pujs.alert("Nothing for you to learn more.", 'success');
-                    }, preset_style: 'black-and-white'
-                }]);
+        if (sessionStorage.getItem('nobanner') !== 'true')
+            pujs.lastingBanner(`<p>We're not using cookies. This is a demo cookie banner.</p>`, type = 'alphabrate', 'bottom',
+                buttons = [
+                    { 'text': 'Consent', callback: () => { } }
+                    , {
+                        'text': "Don't show again", callback: () => {
+                            sessionStorage.setItem('nobanner', 'true');
+                            pujs.alert("This message will not show in this session.", 'success');
+                        }, preset_style: 'black-and-white'
+                    }]);
 
         document.querySelectorAll('button[onclick]').forEach(b => {
             // Add <span class="show-source">Show Source Code</span>

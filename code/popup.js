@@ -99,10 +99,20 @@ let pujs = {
             lastingBanner: {
                 start: function () { return false; },
                 end: function () { return false; }
+            },
+            actionSheet: {
+                start: function () { return false; },
+                end: function () { return false; }
             }
         }
     }
 };
+
+if (pujs.icons) {
+    pujs.setup.icons_path = pujs.icons;
+}
+
+pujs.init = pujs.setup.init;
 
 // Replace all <icon> to <svg>
 let puJS_icon_holders = document.getElementsByTagName('icon');
@@ -263,9 +273,16 @@ document.body.addEventListener('touchmove', function (e) {
         let y = e.touches[0].clientY;
         let dy = y - pujs.pullOutTouch.start_y;
         let percentage = dy / window.innerHeight * 100;
-        e.target.style.transform = 'translateY(' + Math.max(percentage, 0) + '%)';
-        e.target.style.willChange = 'transform';
+        e.target.style.bottom = `-${percentage}%`;
         e.target.style.transition = 'none';
+
+        // if percentage is negative, /10 and increase to the height
+        if (!e.target.dataset.height) {
+            e.target.dataset.height = e.target.style.height;
+        }
+        if (percentage < 0) {
+            e.target.style.height = `calc(${e.target.dataset.height} + ${-percentage}px)`;
+        }
     }
 });
 
@@ -283,15 +300,25 @@ document.body.addEventListener('touchend', function (e) {
         let dy = y - pujs.pullOutTouch.start_y;
         let percentage = dy / window.innerHeight * 100;
 
+        // release back the height
+        e.target.style.height = e.target.dataset.height;
+        // remove the dataset
+        e.target.removeAttribute('data-height');
+
         let timeDifference = Date.now() - pujs.pullOutTouch.time;
 
         let ppt = (percentage / timeDifference > 0.26);
         if (percentage > 30 || ppt) {
-            e.target.style.transition = 'transform 0.5s';
-            e.target.style.transform = 'translateY(100%)';
+
+            e.target.style.transition = '0.5s var(--pu-smooth-ease)';
+            e.target.style.pointerEvents = 'none';
+            e.target.style.bottom = '-100%';
 
             // ending event
             pujs.setup.todo.pullOut.ending();
+
+            // background cover remove if no other data-fullscreen-cover
+            // document.querySelector('
 
             setTimeout(() => {
                 e.target.remove();
@@ -299,15 +326,13 @@ document.body.addEventListener('touchend', function (e) {
                 pujs.pullOutTouch.done();
             }, 500);
         } else {
-            e.target.style.transition = 'transform 0.5s';
-            e.target.style.transform = 'translateY(0)';
+            e.target.style.transition = '1s var(--pu-smooth-ease)';
+            e.target.style.bottom = '0';
         }
     }
 });
 
-pujs.pullOut = (html = '', scroll = false, options = {
-    lockscreen: true,
-}) => {
+pujs.pullOut = (html = '', scroll = false, options = {}) => {
     pujs.setup.todo.pullOut.start();
 
     return new Promise((resolve, reject) => {
@@ -322,13 +347,39 @@ pujs.pullOut = (html = '', scroll = false, options = {
 
             if (options.id) { a.id = options.id; }
 
-            if (options.lockscreen) {
+            if (!a.id) {
+                a.id = Math.random().toString(36).substring(7);
+            }
+
+            if (options.lockscreen == null || options.lockscreen == undefined || options.lockscreen) {
                 pujs.lockscreen();
+            }
+
+            if (options.dragHandle) {
+                let dragHandle = document.createElement('div');
+                dragHandle.classList.add('pujs-poAlert-dragHandle');
+                a.appendChild(dragHandle);
+            }
+
+            if (options.closeButton) {
+                let closeButton = document.createElement('button');
+                closeButton.classList.add('pujs-poAlert-closeButton');
+                closeButton.innerHTML = '<icon data-icon="close"></icon>';
+                closeButton.addEventListener('click', () => {
+                    pujs.pullOut.close(a.id);
+                });
+                a.appendChild(closeButton);
+            }
+
+            if (options.height) {
+                a.style.height = options.height;
             }
 
             document.body.appendChild(a);
 
             resolve(a);
+
+            puJSIcons();
 
             pujs.pullOutAlerts.push(a);
         }, 1);
@@ -632,5 +683,104 @@ pujs.lastingBanner.close = (id) => {
             banner.remove();
         }, 500);
         pujs.setup.todo.lastingBanner.end();
+    }
+};
+
+pujs.actionSheet = (title = '', message = '', buttons = [{ 'text': 'Action', callback: () => { } }], options = {}) => {
+    // or bottom sheet
+    pujs.setup.todo.actionSheet.start();
+    if (options.lockscreen) {
+        pujs.lockscreen();
+    }
+    if (!document.querySelector('.puJS-fullscreen-cover')) {
+        let FullscreenCover = document.createElement('div');
+        FullscreenCover.classList.add('puJS-fullscreen-cover');
+        document.body.appendChild(FullscreenCover);
+    }
+
+    if (!options.cancel) {
+        options.cancel = 'Cancel';
+    }
+
+    let actionSheet = document.createElement('div');
+    actionSheet.classList.add('puJS-action-sheet');
+
+    let id = options.id || Math.random().toString(36).substring(7);
+    actionSheet.id = id;
+
+    let buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('buttons');
+
+    buttons.forEach((w) => {
+        let button = document.createElement('button');
+        button.innerHTML = w.text;
+        button.addEventListener('click', (e) => {
+            if (w.callback) { w.callback(); }
+            pujs.actionSheet.close(id);
+        });
+
+        // Types: action[default], disabled, destructive
+
+        if (w.type) {
+            button.classList.add(`pujs-button-${w.type}`);
+        }
+
+        if (w.type === 'disabled') {
+            button.disabled = true;
+        }
+
+        buttonsDiv.appendChild(button);
+    });
+
+    let cancelButton = document.createElement('button');
+    cancelButton.innerHTML = options.cancel;
+    cancelButton.classList.add('cancel');
+    cancelButton.addEventListener('click', () => {
+        pujs.actionSheet.close(id);
+    });
+
+    let titleDiv = document.createElement('div');
+    titleDiv.classList.add('title');
+    titleDiv.innerHTML = title;
+
+    let messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messageDiv.innerHTML = message;
+
+    let firstPart = document.createElement('div');
+    firstPart.classList.add('first-part');
+    firstPart.appendChild(titleDiv);
+    firstPart.appendChild(messageDiv);
+    firstPart.appendChild(buttonsDiv);
+
+    actionSheet.appendChild(firstPart);
+    actionSheet.appendChild(cancelButton);
+
+    document.body.appendChild(actionSheet);
+
+    document.querySelector('.puJS-fullscreen-cover').style.opacity = 1;
+    document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'all';
+
+    pujs.lockscreen();
+
+    return id;
+};
+
+pujs.actionSheet.close = (id) => {
+    if (!id) {
+        id = document.querySelector('.puJS-action-sheet').id;
+    }
+
+    let actionSheet = document.getElementById(id);
+    if (actionSheet) {
+        document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
+        document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
+        pujs.lockscreen.unlock();
+        actionSheet.style.pointerEvents = 'none';
+        actionSheet.style.animation = 'pujsActionSheetSlideOutOuter .7s forwards var(--pu-smooth-ease)';
+        setTimeout(() => {
+            actionSheet.remove();
+        }, 700);
+        pujs.setup.todo.actionSheet.end();
     }
 };
