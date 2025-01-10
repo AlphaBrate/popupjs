@@ -16,3 +16,9 @@
 - Solve the issue of animation not working when the user is not clicking to close a pulled-out alert one by one.
 - Add a new feature: 'lastingBanner' which allows the user to make a banner that will last until the user closes it. (Well, you can also set a time limit for it to close automatically.)
 - Solve the issue of the popup not having closing animation when the user closes it by clicking.
+
+2025-01-10:
+
+- Add a hover effect on the drag handle of the 'Pull-out Alert' feature when hovering and clicking.
+- Solve the issue of the 'Pull-out Alert' 'Close Button' does not unlock the screen when the alert is closed.
+- Rewrite the 'popup' feature to make it more stable and reliable. Based on the `<dialog>` element, the popup feature now has a better performance and compatibility.

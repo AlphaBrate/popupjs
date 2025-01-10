@@ -116,6 +116,11 @@
         background: var(--pujs-popup-narrowed-background);
         border-radius: 7px 7px 0 0;
     }
+
+    &.dragging {
+        user-select: none;
+        -webkit-user-select: none;
+    }
 }
 
 .pujs-poAlert>.pujs-poAlert-closeButton {
@@ -160,6 +165,16 @@
     max-width: 200px;
     border-radius: 5rem;
     background: var(--gray2);
+    cursor: pointer;
+    transition: .3s;
+
+    &:hover {
+        opacity: .85;
+    }
+
+    &:active {
+        transform: translateY(1px) translateX(-50%) scale(.99);
+    }
 }
 
 @keyframes pujsPoAlertSlideIn {
@@ -296,6 +311,37 @@
     transition: .5s;
     opacity: 0;
     pointer-events: none;
+}
+
+dialog.puJS-popup {
+    background: transparent;
+    border: none;
+}
+
+dialog.puJS-popup:-internal-dialog-in-top-layer::backdrop {
+    background: transparent;
+    backdrop-filter: brightness(.8);
+    -webkit-backdrop-filter: brightness(.8);
+    animation: pu-backdrop-blur .5s;
+    transition: .5s;
+}
+
+dialog.puJS-popup.closed:-internal-dialog-in-top-layer::backdrop {
+    backdrop-filter: brightness(1);
+    -webkit-backdrop-filter: brightness(1);
+    transition: .5s;
+}
+
+@keyframes pu-backdrop-blur {
+    0% {
+        backdrop-filter: brightness(1);
+        -webkit-backdrop-filter: brightness(1);
+    }
+
+    100% {
+        backdrop-filter: brightness(.8);
+        -webkit-backdrop-filter: brightness(.8);
+    }
 }
 
 .puJS-popup {

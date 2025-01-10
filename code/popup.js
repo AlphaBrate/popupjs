@@ -358,6 +358,22 @@ pujs.pullOut = (html = '', scroll = false, options = {}) => {
             if (options.dragHandle) {
                 let dragHandle = document.createElement('div');
                 dragHandle.classList.add('pujs-poAlert-dragHandle');
+
+                let startDrag = (e) => {
+                    e.target.parentElement.classList.add('dragging');
+                };
+
+                let endDrag = (e) => {
+                    if (e.target.parentElement.classList.contains('dragging'))
+                        e.target.parentElement.classList.remove('dragging');
+                };
+
+                dragHandle.addEventListener('mousedown', startDrag);
+                document.addEventListener('mouseup', endDrag);
+
+                dragHandle.addEventListener('touchstart', startDrag);
+                document.addEventListener('touchend', endDrag);
+
                 a.appendChild(dragHandle);
             }
 
@@ -366,7 +382,8 @@ pujs.pullOut = (html = '', scroll = false, options = {}) => {
                 closeButton.classList.add('pujs-poAlert-closeButton');
                 closeButton.innerHTML = '<icon data-icon="close"></icon>';
                 closeButton.addEventListener('click', () => {
-                    pujs.pullOut.close(a.id);
+                    let event = new Event('click');
+                    document.body.dispatchEvent(event);
                 });
                 a.appendChild(closeButton);
             }
@@ -475,23 +492,15 @@ pujs.alert = (m = '', t = 'error', T = 3000, S = false, options = {}) => {
     }, T);
 };
 
-pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type, input, options = {
+pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () => { } }], button_type = 'vert', input, options = {
     lockscreen: true
 }) => {
     pujs.setup.todo.popup.start();
     if (options.lockscreen) {
         pujs.lockscreen();
     }
-    if (!document.querySelector('.puJS-fullscreen-cover')) {
-        let FullscreenCover = document.createElement('div');
-        FullscreenCover.classList.add('puJS-fullscreen-cover');
-        document.body.appendChild(FullscreenCover);
-    }
 
-    document.querySelector('.puJS-fullscreen-cover').style.opacity = 1;
-    document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'all';
-
-    let popup = document.createElement('div');
+    let popup = document.createElement('dialog');
     popup.classList.add('puJS-popup');
 
     let inp = '';
@@ -529,18 +538,19 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 if (w.callback) { w.callback(values); }
                 pujs.setup.todo.popup.end();
 
+                // add .closed to popup
+                e.target.parentElement.parentElement.parentElement.classList.add('closed');
+
                 e.target.parentElement.parentElement.parentElement.classList.add('puJS-popup-ended');
                 setTimeout(() => {
                     pujs.lockscreen.unlock();
                     e.target.parentElement.parentElement.parentElement.remove();
-                    document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
-                    document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
                 }, 200);
 
             });
             popup.querySelector('.buttons').appendChild(button);
         });
-    } else {
+    } else if (button_type === 'horiz') {
         let buttonContainer = document.createElement('div');
         buttonContainer.classList.add('button-container');
         let i;
@@ -563,11 +573,11 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
                 if (buttons[e.target.dataset.index].callback) { buttons[e.target.dataset.index].callback(values); }
                 pujs.setup.todo.popup.end();
                 e.target.parentElement.parentElement.parentElement.parentElement.classList.add('puJS-popup-ended');
+                // add .closed to popup
+                e.target.parentElement.parentElement.parentElement.parentElement.classList.add('closed');
                 setTimeout(() => {
                     pujs.lockscreen.unlock();
                     e.target.parentElement.parentElement.parentElement.parentElement.remove();
-                    document.querySelector('.puJS-fullscreen-cover').style.opacity = 0;
-                    document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'none';
                 }, 200);
             });
             buttonContainer.appendChild(button);
@@ -575,9 +585,14 @@ pujs.popup = (title = '', message = '', buttons = [{ 'text': 'OK', callback: () 
         popup.querySelector('.buttons').appendChild(buttonContainer);
     }
 
-    popup.querySelector('button').classList.add('emphasized');
+    try {
+        popup.querySelector('button').classList.add('emphasized');
+    } catch { }
 
     document.body.appendChild(popup);
+
+    // show dialog
+    popup.showModal();
 };
 
 pujs.lastingBanner = (html = '', type = 'warning', pos = 'bottom', buttons = [{ 'text': 'Close', callback: () => { }, style: "color: white; background: black; padding: 5px 10px; border-radius: 50px;" }], id, options = {}) => {
