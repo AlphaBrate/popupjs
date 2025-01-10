@@ -184,6 +184,9 @@ pujs.lockscreen = function () {
         document.body.style.width = `calc(100vw - ${scrollbar_width + 'px'})`;
         document.body.style.right = scrollbar_width + 'px';
         document.body.style.overflow = 'hidden';
+
+        // add .pujs-screen-locked to body
+        document.body.classList.add('pujs-screen-locked');
     }
 };
 
@@ -197,6 +200,9 @@ pujs.lockscreen.unlock = function () {
         document.body.style.overflowX = pujs.setup.original.overflowX;
         document.body.style.overflowY = pujs.setup.original.overflowY;
         window.scrollTo(pujs.setup.original.scrollLeft, pujs.setup.original.scroll);
+
+        // remove .pujs-screen-locked from body
+        document.body.classList.remove('pujs-screen-locked');
     }
 }
 
