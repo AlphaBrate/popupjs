@@ -22,3 +22,7 @@
 - Add a hover effect on the drag handle of the 'Pull-out Alert' feature when hovering and clicking.
 - Solve the issue of the 'Pull-out Alert' 'Close Button' does not unlock the screen when the alert is closed.
 - Rewrite the 'popup' feature to make it more stable and reliable. Based on the `<dialog>` element, the popup feature now has a better performance and compatibility.
+
+- Add a new css class: 'pujs-screen-lock' which will be added to the body when the screen is locked by the alert. You can use this class to style the screen when it is locked.
+
+- Solve the issue of the lock screen control not working when using the 'Action Sheet' feature.

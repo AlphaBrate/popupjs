@@ -710,7 +710,7 @@ pujs.lastingBanner.close = (id) => {
 pujs.actionSheet = (title = '', message = '', buttons = [{ 'text': 'Action', callback: () => { } }], options = {}) => {
     // or bottom sheet
     pujs.setup.todo.actionSheet.start();
-    if (options.lockscreen) {
+    if (options.lockscreen !== false) {
         pujs.lockscreen();
     }
     if (!document.querySelector('.puJS-fullscreen-cover')) {
@@ -781,8 +781,6 @@ pujs.actionSheet = (title = '', message = '', buttons = [{ 'text': 'Action', cal
 
     document.querySelector('.puJS-fullscreen-cover').style.opacity = 1;
     document.querySelector('.puJS-fullscreen-cover').style.pointerEvents = 'all';
-
-    pujs.lockscreen();
 
     return id;
 };
