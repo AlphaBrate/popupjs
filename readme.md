@@ -1,6 +1,8 @@
 # Popup JS
 
-Popup.js is a lightweight JavaScript library that provides a simple way to create alerts for your web application. It's easy to use and customize and works well with modern web browsers.
+PopupJS is a lightweight JavaScript library that provides a simple way to create alerts for your web application. It's easy to use and customize and works well with modern web browsers.
+
+This version of PopupJS is based on the style of iOS 18. The version based on iOS 26 will be created soon. 
 
 > [!NOTE]
 > Visit [this page](https://alphabrate.github.io/popupjs/code/showcase/) for sample.
